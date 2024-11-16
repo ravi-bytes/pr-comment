@@ -38,7 +38,7 @@ jobs:
         with:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
-          pr_number: ${{ github.event.pull_request.number }}
+          prNumber: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
   
   check-dist:
