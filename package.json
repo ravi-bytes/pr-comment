@@ -1,21 +1,25 @@
 {
-  "name": "javascript-action",
-  "description": "GitHub Actions JavaScript Template",
+  "name": "pr-comment",
+  "description": "Adds PR changes as a comment",
   "version": "0.0.0",
+  "main": "index.js",
   "author": "",
   "private": true,
-  "homepage": "https://github.com/actions/javascript-action#readme",
+  "homepage": "https://github.com/ravi-bytes/pr-comment#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
+    "url": "git+https://github.com/ravi-bytes/pr-comment.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
+    "url": "https://github.com/ravi-bytes/pr-comment/issues"
   },
   "keywords": [
     "GitHub",
     "Actions",
-    "JavaScript"
+    "JavaScript",
+    "Pull Request",
+    "Comment",
+    "MetaData"
   ],
   "exports": {
     ".": "./dist/index.js"
