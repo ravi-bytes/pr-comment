@@ -29918,7 +29918,7 @@ async function run() {
   try {
     const owner = core.getInput('owner', { required: true })
     const repo = core.getInput('repo', { required: true })
-    const prNumber = core.getInput('pr_number', { required: true })
+    const pr_number = core.getInput('pr_number', { required: true })
     const token = core.getInput('token', { required: true })
 
     const octokit = new github.getOctokit(token)
@@ -29926,7 +29926,7 @@ async function run() {
     const { data: changedFiles } = await octokit.pulls.listFiles({
       owner,
       repo,
-      pull_number: prNumber
+      pull_number: pr_number
     })
 
     let diffData = {
@@ -29945,9 +29945,9 @@ async function run() {
     await octokit.rest.issues.createComment({
       owner,
       repo,
-      issue_number: prNumber,
+      issue_number: pr_number,
       body: `
-        This PR #${prNumber} has : \n
+        This PR #${pr_number} has : \n
         - ${diffData.additions} additions \n
         - ${diffData.deletions} deletions \n  
         - with a total of ${diffData.changes} changes.`
@@ -29977,10 +29977,10 @@ async function run() {
           break
       }
 
-      await octokit.rest.issues.addLabel({
+      await octokit.rest.issues.addLabels({
         owner,
         repo,
-        issue_number: prNumber,
+        issue_number: pr_number,
         labels: [label]
       })
     }
