@@ -1,24 +1,77 @@
 const core = require('@actions/core')
-const { wait } = require('./wait')
+// const { wait } = require('./wait')
+const github = require('@actions/github')
 
-/**
- * The main function for the action.
- * @returns {Promise<void>} Resolves when the action is complete.
- */
 async function run() {
   try {
-    const ms = core.getInput('milliseconds', { required: true })
+    const owner = core.getInput('owner', { required: true })
+    const repo = core.getInput('repo', { required: true })
+    const prNumber = core.getInput('pr_number', { required: true })
+    const token = core.getInput('token', { required: true })
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const octokit = new github.getOctokit(token)
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const { data: changedFiles } = await octokit.pulls.listFiles({
+      owner,
+      repo,
+      pull_number: prNumber
+    })
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    let diffData = {
+      addition: 0,
+      deletions: 0,
+      changes: 0
+    }
+
+    diffData = changedFiles.reduce((acc, { additions, deletions }) => {
+      acc.additions += additions
+      acc.deletions += deletions
+      acc.changes += additions + deletions
+      return acc
+    }, diffData)
+
+    await octokit.rest.issues.createComment({
+      owner,
+      repo,
+      issue_number: prNumber,
+      body: `
+        This PR #${prNumber} has : \n
+        - ${diffData.additions} additions \n
+        - ${diffData.deletions} deletions \n  
+        - with a total of ${diffData.changes} changes.`
+    })
+
+    for (const file of changedFiles) {
+      const fileExtention = file.filename.split('.').pop()
+      let label = ''
+      switch (fileExtention) {
+        case 'md':
+          label = 'markdown'
+          break
+        case 'js':
+          label = 'javascript'
+          break
+        case 'json':
+          label = 'json'
+          break
+        case 'yml':
+          label = 'yaml'
+          break
+        case 'yaml':
+          label = 'yaml'
+          break
+        default:
+          label = 'noextension'
+          break
+      }
+
+      await octokit.rest.issues.addLabel({
+        owner,
+        repo,
+        issue_number: prNumber,
+        labels: [label]
+      })
+    }
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)
