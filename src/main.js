@@ -6,7 +6,7 @@ async function run() {
   try {
     const owner = core.getInput('owner', { required: true })
     const repo = core.getInput('repo', { required: true })
-    const prNumber = core.getInput('prNumber', { required: true })
+    const prNumber = core.getInput('pr_number', { required: true })
     const token = core.getInput('token', { required: true })
 
     const octokit = new github.getOctokit(token)
